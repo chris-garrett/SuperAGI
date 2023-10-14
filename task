@@ -1,0 +1,31 @@
+#!/bin/bash
+
+
+mkdir -p .local/cache
+
+
+run_compose() {
+    docker-compose -p superagi -f docker-compose-cg.yaml $*
+}
+
+
+for arg in "$@" 
+do
+    if [ "$arg" == "log" ] || [ "$arg" == "logs" ]; then
+        run_compose logs -f --tail=100
+    elif [ "$arg" == "down" ]; then
+        run_compose stop
+        run_compose rm -f
+    elif [ "$arg" == "up" ]; then
+        run_compose up -d --build
+    elif [ "$arg" == "restart" ]; then
+        run_compose stop
+        run_compose rm -f
+        run_compose up -d --build
+    elif [ "$arg" == "build" ]; then
+        run_compose build
+    else
+        echo "Invalid argument: $arg"
+    fi
+done
+
